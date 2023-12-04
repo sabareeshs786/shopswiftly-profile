@@ -1,4 +1,3 @@
-// Built-in or Common core modules
 require('dotenv').config();
 const express = require('express');
 const app = express();
@@ -15,40 +14,25 @@ const credentials = require('./middleware/credentials');
 const mongoose = require('mongoose');
 const connectDB = require('./config/dbConnect');
 
-// Defining which port number to listen
 const PORT = process.env.PORT || 3500;
 
-// Connect to MongoDB
 connectDB();
 
-// custom middleware logger
 app.use(logger);
-
-// Handle options credentials check - before CORS!
-// and fetch cookies credentials requirement
 app.use(credentials);
-
-// Cross Origin Resource Sharing
 app.use(cors(corsOptions));
-
-// built-in middleware to handle urlencoded form data
 app.use(express.urlencoded({ extended: false }));
-
-// built-in middleware for json 
 app.use(express.json());
-
-//middleware for cookies
 app.use(cookieParser());
 
 // routes
 app.use('/', require('./routes/root'));
-app.use('/register', require('./routes/authRoutes/register'));
-app.use('/auth', require('./routes/authRoutes/auth'));
+app.use('/signup', require('./routes/authRoutes/signup'));
+app.use('/login', require('./routes/authRoutes/auth'));
 app.use('/refresh', require('./routes/authRoutes/refresh'));
 app.use('/logout', require('./routes/authRoutes/logout'));
 
 // Routes that require authentication and authorization
-
 // Verifying JWT(JSON Web Token)
 app.use(verifyJWT);
 

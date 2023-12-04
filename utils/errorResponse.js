@@ -1,6 +1,5 @@
-const res400 = (res, msg) => {
-    res.status(400).json({ message: msg});
-    return;
-}
+const res400 = (res, msg) => res.status(400).json({ message: msg});
 
-module.exports = { res400 };
+const res500 = (res) => res.status(500).json({"message":"Internal server error occurred"})
+
+module.exports = { res400, res500 };

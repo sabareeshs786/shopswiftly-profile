@@ -1,33 +1,27 @@
 const User = require('../../model/User');
 const jwt = require('jsonwebtoken');
+const { getAccessToken } = require('../../utils/getTokens');
 
 const handleRefreshToken = async (req, res) => {
+
     const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(401);
+    if (!cookies?.jwt) return res.status(401).json({"message": "You are not authorized\nTry logging in again"});
     const refreshToken = cookies.jwt;
 
     const foundUser = await User.findOne({ refreshToken }).exec();
-    if (!foundUser) return res.sendStatus(403); //Forbidden 
-    // evaluate jwt 
+    if (!foundUser) return res.status(403).json({"message": "You are not authorized\nTry logging in again"});
+
     jwt.verify(
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
         (err, decoded) => {
-            if (err || foundUser.username !== decoded.username) return res.sendStatus(403);
+            if (err || foundUser.email !== decoded.email ) 
+                return res.status(403).json({"message": "You are not authorized\nTry logging in again"});
             const roles = Object.values(foundUser.roles);
-            const accessToken = jwt.sign(
-                {
-                    "UserInfo": {
-                        "username": decoded.username,
-                        "roles": roles
-                    }
-                },
-                process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '2h' }
-            );
-            res.json({ roles, accessToken })
+            const accessToken = getAccessToken(decoded.email, roles);
+            res.json({ roles, accessToken });
         }
     );
 }
 
-module.exports = { handleRefreshToken }
+module.exports = { handleRefreshToken };
