@@ -6,13 +6,13 @@ const { res500 } = require('../../utils/errorResponse');
 const handleLogin = async (req, res) => {
     try {
         const { email, pwd } = req.body;
-        if (!email || !pwd) return res.status(400).json({ 'message': 'Username and password are required.' });
+        if (!email || !pwd) return res.sendStatus(400);
 
         const foundUser = await User.findOne({ email: email }).exec();
-        if (!foundUser) return res.status(401).json({ "message": "Invalid Email id or Password" });
+        if (!foundUser) return res.sendStatus(401);
 
         const match = await bcrypt.compare(pwd, foundUser.password);
-        if (!match) return res.status(401).json({ "message": "Invalid Email id or Password" });
+        if (!match) return res.sendStatus(401);
 
         const roles = Object.values(foundUser.roles).filter(Boolean);
 

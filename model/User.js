@@ -7,6 +7,11 @@ const userSchema = new Schema({
         required: true,
         unique: true
     },
+    phno:{
+        type: Number,
+        required: false,
+        unique: true
+    },
     roles: {
         User: {
             type: Number,
