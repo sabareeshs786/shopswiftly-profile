@@ -16,9 +16,9 @@ const handleLogin = async (req, res) => {
 
         const roles = Object.values(foundUser.roles).filter(Boolean);
 
-        const accessToken = getAccessToken(foundUser.email, roles);
+        const accessToken = getAccessToken(foundUser.userid, roles);
 
-        const refreshToken = getRefreshToken(foundUser.email);
+        const refreshToken = getRefreshToken(foundUser.userid);
         foundUser.refreshToken = refreshToken;
         const result = await foundUser.save();
         if (!result) return res500(res);

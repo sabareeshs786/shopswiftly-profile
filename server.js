@@ -14,6 +14,11 @@ const credentials = require('./middleware/credentials');
 const mongoose = require('mongoose');
 const connectDB = require('./config/dbConnect');
 
+const signupController = require('./controller/AuthControllers/signupController');
+const loginController = require('./controller/AuthControllers/loginController');
+const logoutController = require('./controller/AuthControllers/logoutController');
+const refreshController = require('./controller/AuthControllers/refreshTokenController');
+
 const PORT = process.env.PORT || 3500;
 
 connectDB();
@@ -26,11 +31,10 @@ app.use(express.json());
 app.use(cookieParser());
 
 // routes
-app.use('/', require('./routes/root'));
-app.use('/signup', require('./routes/authRoutes/signup'));
-app.use('/login', require('./routes/authRoutes/auth'));
-app.use('/refresh', require('./routes/authRoutes/refresh'));
-app.use('/logout', require('./routes/authRoutes/logout'));
+app.post('/signup', signupController.handleNewUser);
+app.post('/login', loginController.handleLogin);
+app.get('/refresh', refreshController.handleRefreshToken);
+app.get('/logout', logoutController.handleLogout);
 
 // Routes that require authentication and authorization
 // Verifying JWT(JSON Web Token)
@@ -39,8 +43,6 @@ app.use(verifyJWT);
 // Routes
 app.use('/users', require('./routes/api/users'));
 
-
-// 
 app.all('*', (req, res) => {
     res.status(404);
     if (req.accepts('html')) {

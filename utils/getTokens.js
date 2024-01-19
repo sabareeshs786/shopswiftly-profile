@@ -2,20 +2,20 @@ require('dotenv').config();
 const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 
-const getRefreshToken = (email) => {
+const getRefreshToken = (userid) => {
     const refreshToken = jwt.sign(
-        { "email": email },
+        { "userid": userid },
         process.env.REFRESH_TOKEN_SECRET,
         { expiresIn: '1d' }
     );
     return refreshToken;
 };
 
-const getAccessToken = (email, roles) => {
+const getAccessToken = (userid, roles) => {
     return jwt.sign(
         {
             "UserInfo": {
-                "email": email,
+                "userid": userid,
                 "roles": roles
             }
         },
