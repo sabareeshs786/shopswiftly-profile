@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Counter = require('./Counter');
-mongoose.set('strictQuery', false);
 
 const userSchema = new Schema({
   userid: {
