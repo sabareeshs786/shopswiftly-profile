@@ -45,6 +45,26 @@ const updateUserAuthDetails = async (req, res) => {
         return res.status(400).json({message: "Invalid input data"});
 }
 
+const updateUserRoles = async (req, res) => {
+    const userid = req?.body?.userid;
+    if (!userid) return res.status(400).json({ "message": 'User ID required' });
+    const field = req?.body?.field;
+    const value = req?.body?.value;
+    if(!field || !value)
+        return res.status(400).json({message: "Invalid input data"});
+    // TODO - To be modified
+    if(field === 'roles'){
+        const user = await User.findOneAndUpdate(
+            { userid }, 
+            { roles: value },
+            { new: true }
+        );
+        return res.status(201).json({message: "Roles updated successfully"});
+    }
+    else
+        return res.status(400).json({message: "Invalid input data"});
+}
+
 const deleteUser = async (req, res) => {
     if (!req?.body?.userid) return res.status(400).json({ "message": 'User ID required' });
     const user = await User.findOne({ _id: req.body.id }).exec();
