@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 
 const Counter = require('../../model/Counter');
 const User = require('../../model/User');
+const Profile = require('../../model/Profile');
 const mongoose = require('mongoose');
 const { isPasswordValid } = require('../../utils/checkInputValidity');
 const { res400 } = require('../../utils/errorResponse');
@@ -29,11 +30,15 @@ const handleNewUser = async (req, res) => {
         );
 
         const hashedPwd = await bcrypt.hash(pwd, 10);
-        const result = await User.create([{
+        const user = await User.create([{
             "userid": counter.value,
             "email": email,
             "password": hashedPwd
         }], { session });
+        const profile = await Profile.create([{
+            "userid": counter.value,
+        }], { session });
+
         await session.commitTransaction();
         res.status(201).json({ 'success': `New user with email id ${email} is created!` });
     } catch (err) {

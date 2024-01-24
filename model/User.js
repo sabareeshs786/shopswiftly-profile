@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Counter = require('./Counter');
 
 const userSchema = new Schema({
   userid: {
