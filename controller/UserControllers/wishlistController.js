@@ -1,4 +1,4 @@
-const Wishlist = require('../../model/Wishlist');
+const Wishlist = require('../../models/Wishlist');
 
 const getItemsFromWishlist = async (req, res) => {
     const userid = req?.params?.userid;

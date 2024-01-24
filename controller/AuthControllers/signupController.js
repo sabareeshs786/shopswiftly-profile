@@ -1,8 +1,8 @@
 const bcrypt = require('bcrypt');
 
-const Counter = require('../../model/Counter');
-const User = require('../../model/User');
-const Profile = require('../../model/Profile');
+const Counter = require('../../models/Counter');
+const User = require('../../models/User');
+const Profile = require('../../models/Profile');
 const mongoose = require('mongoose');
 const { isPasswordValid } = require('../../utils/checkInputValidity');
 const { res400 } = require('../../utils/errorResponse');

@@ -1,4 +1,4 @@
-const Profile = require('../../model/Profile');
+const Profile = require('../../models/Profile');
 
 const getPersonalInfo = async (req, res) => {
     const userid = req?.params?.userid;
