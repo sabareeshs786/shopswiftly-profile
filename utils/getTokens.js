@@ -1,5 +1,5 @@
 require('dotenv').config();
-const User = require('../model/User');
+const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 const getRefreshToken = (userid) => {

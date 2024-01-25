@@ -1,4 +1,4 @@
-const User = require('../../model/User');
+const User = require('../../models/User');
 const { res500 } = require('../../utils/errorResponse');
 const { res204 } = require('../../utils/genericResponse');
 
