@@ -1,11 +1,13 @@
 const Profile = require('../../models/Profile');
+const { isValidPhoneNumber, isValidName, getIntVal } = require('../../utils/utilFunctions');
 
+// Can be accessible by user only
 const getPersonalInfo = async (req, res) => {
-    const userid = req?.params?.userid;
-    if (!userid) return res.status(400).json({ "message": 'User ID required' });
-    const fields = ['-id', '-createdAt', '-updatedAt', '-__v', '-addresses'];
     try {
-        const personalInfo = await Profile.find({ userid }).select(fields.join(' '));
+        const userid = req.userid;
+        if (!userid) return res.status(400).json({ "message": 'Invalid input data' });
+        const excludedFields = ['-_id', '-__v', '-addresses', '-defaultAddress'];
+        const personalInfo = await Profile.findOne({ userid }).select(excludedFields.join(' '));
         if (!personalInfo) {
             return res.status(404).json({ 'message': 'Profile not found' });
         }
@@ -17,14 +19,15 @@ const getPersonalInfo = async (req, res) => {
 }
 
 const getAddresses = async (req, res) => {
-    const userid = req?.params?.userid;
-    if (!userid) return res.status(400).json({ "message": 'User ID required' });
-    const fields = ['-id', 'addresses'];
+    const userid = req.userid;
+    if (!userid) return res.status(400).json({ "message": 'Invalid input data' });
+    const fields = ['-_id', 'addresses', 'defaultAddress'];
     try {
         const addressesInfo = await Profile.find({ userid }).select(fields.join(' '));
         if (!addressesInfo)
             return res.status(404).json({ message: 'Profile not found' });
-        res.status(204).json(addressesInfo);
+        console.log(addressesInfo);
+        res.status(200).json(addressesInfo);
     } catch (error) {
         console.log(error);
         res.status(500);
@@ -32,44 +35,74 @@ const getAddresses = async (req, res) => {
 }
 
 const updatePersonalInfo = async (req, res) => {
-    const userid = req?.body?.userid;
-    if (!userid) return res.status(400).json({ "message": 'User ID required' });
-    const field = req?.body?.field;
-    const value = req?.body?.value;
-    const code = value.code || '+91';
-    const num = value.num;
-
-    if (!field || !value)
-        return res.status(400).json({ message: "Invalid input data" });
     try {
+        const userid = req.userid;
+        if (!userid) return res.status(400).json({ "message": 'Invalid input data' });
+        const field = req?.body?.field;
+        const value = req?.body?.value;
+        const code = value.code || '+91';
+        const num = value.num;
+        let g;
+
+        if (!field || !value)
+            return res.status(400).json({ message: "Invalid input data" });
         if (field === 'phno') {
-            const profile = await Profile.findOneAndUpdate(
+            if (!num || !isValidPhoneNumber(num))
+                return res.status(400).json({ message: "Invalid input data" });
+
+            const profile = await Profile.updateOne(
                 { userid },
                 {
-                    phno: {
-                        code: code,
-                        number: num,
+                    $set: {
+                        phno: {
+                            code: code,
+                            number: num,
+                        }
                     }
                 },
-                { new: true }
-            );
-            return res.status(201).json({ message: "Phone number updated successfully" });
+            ).exec();
+            if (profile.modifiedCount === 1)
+                return res.status(204).json({ message: "Phone number updated successfully" });
+            else
+                return res.status(200).join({ message: "Same phone number entered" });
         }
         else if (field === 'name') {
-            const profile = await Profile.findOneAndUpdate(
+            if (!value || !isValidName(value))
+                return res.status(400).json({ message: "Invalid input data" });
+
+            const profile = await Profile.updateOne(
                 { userid },
-                { name: value },
-                { new: true }
+                {
+                    $set: {
+                        name: value
+                    }
+                },
             );
-            return res.status(201).json({ message: "Name updated successfully" });
+            if (profile.modifiedCount === 1)
+                return res.status(204).json({ message: "Name updated successfully" });
+            else
+                return res.status(200).join({ message: "Same name entered" });
         }
         else if (field === 'gender') {
-            const profile = await Profile.findOneAndUpdate(
+            if (value === "male")
+                g = "m"
+            else if (value === "female")
+                g = "f"
+            else
+                return res.status(400).json({ message: "Invalid input data" });
+
+            const profile = await Profile.updateOne(
                 { userid },
-                { gender: value },
-                { new: true }
-            );
-            return res.status(201).json({ message: "Gender updated successfully" });
+                { 
+                    $set:{
+                        gender: g
+                    }
+                },
+            ).exec();
+            if(profile.modifiedCount === 1)
+                return res.status(204).json({ message: "Gender updated successfully" });
+            else
+                return res.status(200).json({ message: "Same gender entered" });
         }
         else
             return res.status(400).json({ message: "Invalid input data" });
@@ -80,16 +113,19 @@ const updatePersonalInfo = async (req, res) => {
 }
 
 const addAddress = async (req, res) => {
-    const userid = req?.body?.userid;
-    if (!userid) return res.status(400).json({ "message": 'User ID required' });
+    const userid = req.userid;
+    if (!userid) return res.status(400).json({ "message": 'Invalid input data' });
     const address = req?.body?.address;
     try {
-        const profile = await Profile.findOneAndUpdate(
+        const profile = await Profile.updateOne(
             { userid },
             { $push: { addresses: address } },
             { new: true }
-        );
-        return res.status(201).json({ message: "Address added successfully" })
+        ).exec();
+        if (!profile)
+            return res.status(201).json({ message: "Address added successfully" });
+        else
+            return res.status(401).json({ message: "Cannot add address" });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal server error" });
@@ -97,19 +133,41 @@ const addAddress = async (req, res) => {
 }
 
 const updateAddress = async (req, res) => {
-    const userid = req?.body?.userid;
-    if (!userid) return res.status(400).json({ "message": 'User ID required' });
-    const address = req?.body?.address;
-    const index = req?.body?.index;
     try {
-        const profile = Profile.updateOne(
+        const userid = req.userid;
+        if (!userid) return res.status(400).json({ "message": 'Invalid input data' });
+        const address = req?.body?.address;
+        const index = req?.body?.index;
+        if (!address || index === undefined || index === null)
+            return res.status(400).json({ message: "Invalid input data" });
+
+        const profile = await Profile.updateOne(
             { userid },
-            { $set: { [`addresses.${index}`]: address } }
-        );
-        return res.status(201).json({ message: "Address updated successfully" });
+            { $set: { [`addresses.${index}`]: address } },
+        ).exec();
+        if (profile.modifiedCount === 1)
+            return res.status(201).json({ message: "Address updated successfully" });
+        else
+            return res.status(201).json({ message: "Same address entered" });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+const updateDefaultAddress = async (req, res) => {
+    try {
+        const userid = req.userid;
+        if (!userid) return res.status(400).json({ "message": 'Invalid input data' });
+        const index = req?.body?.index;
+        if (index === undefined || index === null)
+            return res.status(400).json({ message: "Invalid input data" });
+        const profile = await Profile.updateOne(
+            { userid },
+            { $set: { [`addresses.${index}`]: address } },
+        ).exec();
+    } catch (error) {
+        res.status(500);
     }
 }
 
@@ -118,5 +176,6 @@ module.exports = {
     getAddresses,
     updatePersonalInfo,
     addAddress,
-    updateAddress
+    updateAddress,
+    updateDefaultAddress
 }

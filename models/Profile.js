@@ -12,7 +12,7 @@ const profileSchema = new Schema({
     },
     gender: {
         type: String,
-        enum: ['male', 'female'],
+        enum: ['m', 'f'],
     },
     phno: {
         code: {

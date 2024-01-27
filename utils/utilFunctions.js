@@ -10,6 +10,34 @@ function isvalidInputData(dataObject) {
     return true;
 }
 
+function isValidPhoneNumber(phoneNumber) {
+    var phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phoneNumber);
+}
+
+function isValidName(name) {
+    var nameRegex = /^[A-Za-z\s]{1,30}$/;
+    return nameRegex.test(name);
+}
+
+const getNumVal = (s) => {
+    if (s === undefined || s === null || s === '')
+        return null;
+    const num = Number(s);
+    if (Number.isNaN(num))
+        return null;
+    return num;
+}
+
+const getIntVal = (s, d) => {
+    if (s === undefined || s === null || s === '')
+        return null;
+    const num = Number(s);
+    if (Number.isNaN(num) || !Number.isInteger(num))
+        return null;
+    return num;
+}
+
 const removeEmptyFields = (fields) => {
     for (const key of Object.keys(fields)) {
         let value = fields[key];
@@ -57,4 +85,4 @@ const strValToNumArr = (str) => {
 }
 
 
-module.exports = { isvalidInputData, removeEmptyFields, strValToNumVal, strValToNumArr };
+module.exports = { isvalidInputData, removeEmptyFields, strValToNumVal, strValToNumArr, isValidPhoneNumber, isValidName, getNumVal, getIntVal };
