@@ -42,7 +42,7 @@ app.use(verifyJWT);
 
 // Routes
 app.use('/users', require('./routes/api/users'));
-app.use('/profiles', require('./routes/api/profile'));
+app.use('/profile', require('./routes/api/profile'));
 
 app.all('*', (req, res) => {
     res.status(404);

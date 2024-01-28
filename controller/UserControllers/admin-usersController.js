@@ -15,10 +15,11 @@ const getAllUsers = async (req, res) => {
 
 const getUser = async (req, res) => {
     try {
-        if (!req?.params?.id) return res.status(400).json({ "message": 'User ID required' });
-        const fields = ['-_id', '-__v', '-refreshToken', '-password']
-        const user = await User.find({ userid: req.params.id }).select(fields.join(' '));
-        if (!user || user.length > 1) {
+        const userid = req?.body?.id;
+        if (!Number.isInteger(userid)) return res.status(400).json({ "message": 'User ID required' });
+        const fields = ['-_id', '-__v', '-refreshToken', '-password'];
+        const user = await User.findOne({ userid: req.params.id }).select(fields.join(' '));
+        if (!user) {
             return res.status(204).json({ 'message': `User ID ${req.params.id} not found` });
         }
         res.json(user[0]);
