@@ -7,7 +7,7 @@ const cors = require('cors');
 // Custom modules
 const corsOptions = require('./config/corsOptions');
 const { logger } = require('./middleware/logEvents');
-const errorHandler = require('./middleware/errorHandler');
+const {errorHandler} = require('./middleware/errorHandler');
 const verifyJWT = require('./middleware/verifyJWT');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middleware/credentials');
@@ -18,6 +18,7 @@ const signupController = require('./controller/AuthControllers/signupController'
 const loginController = require('./controller/AuthControllers/loginController');
 const logoutController = require('./controller/AuthControllers/logoutController');
 const refreshController = require('./controller/AuthControllers/refreshTokenController');
+const { addAdmin } = require('./config/addAdmin');
 
 const PORT = process.env.PORT || 3500;
 
@@ -60,5 +61,6 @@ app.use(errorHandler);
 
 mongoose.connection.once('open', () => {
     console.log('Connected to MongoDB');
+    addAdmin();
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });

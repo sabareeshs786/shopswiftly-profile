@@ -7,6 +7,6 @@ const verifyRoles = require('../../middleware/verifyRoles');
 router.route('/')
     .get(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), wishlistController.getItemsFromWishlist)
     .post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), wishlistController.addItemToWishlist)
-    .delete(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), wishlistController.deleteItemInWishlist)
+    .delete(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), wishlistController.deleteItemFromWishlist)
 
 module.exports = router;

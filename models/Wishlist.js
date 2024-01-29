@@ -9,7 +9,7 @@ const WishlistSchema = new Schema({
     },
     skuid: {
         type: [Number],
-        required: true
+        default: []
     }
 });
 

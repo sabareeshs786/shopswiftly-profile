@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { errorLogger } = require('./errorHandler');
 
 const verifyJWT = (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -8,8 +9,10 @@ const verifyJWT = (req, res, next) => {
         token,
         process.env.ACCESS_TOKEN_SECRET,
         (err, decoded) => {
-            console.log(err);
-            if (err) return res.sendStatus(403);
+            if (err){
+                errorLogger(err);
+                return res.sendStatus(403);
+            }
             req.userid = decoded.UserInfo.userid;
             req.roles = decoded.UserInfo.roles;
             next();
