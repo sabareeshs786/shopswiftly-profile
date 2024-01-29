@@ -20,7 +20,7 @@ function isValidName(name) {
     return nameRegex.test(name);
 }
 
-function isValidAddress(address){
+function isValidAddress(address) {
     let addressRegex = /^[A-Za-z0-9\s,.'\-/]{1,100}$/;
     return addressRegex.test(address);
 }
@@ -66,7 +66,7 @@ const removeEmptyFields = (fields) => {
 
         }
         else {
-            if (!value)
+            if (value === undefined || value === null)
                 delete fields[key];
         }
     }
@@ -75,9 +75,9 @@ const removeEmptyFields = (fields) => {
 
 const strValToNumVal = (obj) => {
     Object.entries(obj).forEach(([key, val]) => {
-        obj[key] = Number(val);
+        obj[key] = val === '' || val === undefined || val === null ? null : Number(val);
     });
-    return Object.fromEntries(Object.entries(obj).filter(([key, value]) => !Number.isNaN(value)));
+    return Object.fromEntries(Object.entries(obj).filter(([key, value]) => !Number.isNaN(value) || value === null));
 };
 
 const strValToNumArr = (str) => {

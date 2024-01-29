@@ -43,6 +43,7 @@ app.use(verifyJWT);
 // Routes
 app.use('/users', require('./routes/api/users'));
 app.use('/profile', require('./routes/api/profile'));
+app.use('/wishlist', require('./routes/api/wishlist'));
 
 app.all('*', (req, res) => {
     res.status(404);
