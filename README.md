@@ -69,6 +69,8 @@ Follow the below steps to set up the microservice in your local machine:
     
     https://github.com/sabareeshs786/shopswiftly-user-ui
 
+    https://github.com/sabareeshs786/shopswiftly-listing-display
+
 ### Features provided by this microservice
 
 1. **Authentication and Authorization**
