@@ -69,7 +69,7 @@ Follow the below steps to set up the microservice in your local machine:
     
     https://github.com/sabareeshs786/shopswiftly-user-ui
 
-### Features and Functionalities provided by this microservice
+### Features provided by this microservice
 
 1. **Authentication and Authorization**
    - Authentication is done using the email id and password
