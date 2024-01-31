@@ -60,11 +60,37 @@ Follow the below steps to set up the microservice in your local machine:
     ```
     
 10. **Install other microservices as well in the following links by following the instructions specified there**
+    
     https://github.com/sabareeshs786/shopswiftly-inventory
+    
     https://github.com/sabareeshs786/shopswiftly-image-server
+    
     https://github.com/sabareeshs786/shopswiftly-admin-ui
+    
     https://github.com/sabareeshs786/shopswiftly-user-ui
 
-### Features
+### Features and Functionalities provided by this microservice
+
+1. **Authentication and Authorization**
+   - Authentication is done using the email id and password
+   - Authorization is done using the JSON Web Token(JWT)
+   - There are three roles: Admin, Editor and User
+   - The roles of a particular user and the userid is stored in the access token which is valid for 2 hours
+   - The refresh token is used to login back without specifying the password by acquiring a new access token
+   - The validity of the refresh token is 1 day and it will be stored in the database
+
+2. **User Profile**
+   - The user information such as name, gender, phone number and addresses are stored
+   - These information is used to process the orders that is placed by the user
+   - It is also used to recommend the most relevant products to them and also to give some suggestions
+
+3. **Wishlist**
+   - This is used to stored the products that the user likes for future purchase
+
+4. **Ratings & Reviews**
+   - This is used to store the ratings and reviews of a particular user and is still under development
+
+### Features under development
+1. Ratings and Reviews
 
    
