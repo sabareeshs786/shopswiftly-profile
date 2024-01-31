@@ -10,7 +10,7 @@ Follow the below steps to set up the microservice in your local machine:
 - Node JS
 - Git
 
-#### Steps to install the shopswiftly-auth microservice:
+#### Steps to install the shopswiftly-profile microservice:
 
 1. **Clone the repository**
     ```bash
