@@ -18,6 +18,7 @@ const signupController = require('./controller/AuthControllers/signupController'
 const loginController = require('./controller/AuthControllers/loginController');
 const logoutController = require('./controller/AuthControllers/logoutController');
 const refreshController = require('./controller/AuthControllers/refreshTokenController');
+const forgotPasswordController = require('./controller/AuthControllers/forgotPasswordController');
 const { addAdmin } = require('./config/addAdmin');
 
 const PORT = process.env.PORT || 3500;
@@ -36,6 +37,8 @@ app.post('/signup', signupController.handleNewUser);
 app.post('/login', loginController.handleLogin);
 app.get('/refresh', refreshController.handleRefreshToken);
 app.get('/logout', logoutController.handleLogout);
+app.use('/forgot-password', forgotPasswordController.handleForgotPassword);
+
 
 // Routes that require authentication and authorization
 // Verifying JWT(JSON Web Token)
