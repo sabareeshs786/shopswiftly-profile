@@ -19,6 +19,7 @@ const loginController = require('./controller/AuthControllers/loginController');
 const logoutController = require('./controller/AuthControllers/logoutController');
 const refreshController = require('./controller/AuthControllers/refreshTokenController');
 const forgotPasswordController = require('./controller/AuthControllers/forgotPasswordController');
+const sendEmailController = require('./controller/AuthControllers/emailSenderController');
 const { addAdmin } = require('./config/addAdmin');
 
 const PORT = process.env.PORT || 3500;
@@ -37,8 +38,7 @@ app.post('/signup', signupController.handleNewUser);
 app.post('/login', loginController.handleLogin);
 app.get('/refresh', refreshController.handleRefreshToken);
 app.get('/logout', logoutController.handleLogout);
-app.use('/forgot-password', forgotPasswordController.handleForgotPassword);
-
+app.post('/forgot-password', forgotPasswordController.handleForgotPassword);
 
 // Routes that require authentication and authorization
 // Verifying JWT(JSON Web Token)
@@ -46,6 +46,7 @@ app.use(verifyJWT);
 
 // Routes
 app.use('/users', require('./routes/api/users'));
+app.use('/admin', require('./routes/api/admins'));
 app.use('/profile', require('./routes/api/profile'));
 app.use('/wishlist', require('./routes/api/wishlist'));
 
@@ -64,6 +65,6 @@ app.use(errorHandler);
 
 mongoose.connection.once('open', () => {
     console.log('Connected to MongoDB');
-    addAdmin();
+    // addAdmin();
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });

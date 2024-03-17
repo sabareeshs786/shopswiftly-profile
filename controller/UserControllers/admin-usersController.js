@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const User = require('../../models/User');
+const Profile = require('../../models/Profile');
 const { isPasswordValid } = require('../../utils/checkInputValidity');
+const Wishlist = require('../../models/Wishlist');
 
 const getAllUsers = async (req, res) => {
     try {
@@ -15,14 +17,14 @@ const getAllUsers = async (req, res) => {
 
 const getUser = async (req, res) => {
     try {
-        const userid = req?.body?.id;
-        if (!Number.isInteger(userid)) return res.status(400).json({ "message": 'User ID required' });
+        const userid = Number.parseInt(req.params.userid);
+        if (!Number.isInteger(userid)) return res.status(400).json({ "message": 'User ID required or Invalid user id entered' });
         const fields = ['-_id', '-__v', '-refreshToken', '-password'];
-        const user = await User.findOne({ userid: req.params.id }).select(fields.join(' '));
+        const user = await User.findOne({ userid }).select(fields.join(' '));
         if (!user) {
-            return res.status(204).json({ 'message': `User ID ${req.params.id} not found` });
+            return res.status(204).json({ 'message': `User ID ${userid} not found` });
         }
-        res.json(user[0]);
+        res.json(user);
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });
     }
@@ -90,12 +92,18 @@ const updateUserRoles = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     try {
-        if (!req?.body?.id) return res.status(400).json({ "message": 'User ID required' });
-        const user = await User.findOne({ userid: req.body.id }).exec();
+        const userid = Number.parseInt(req.params.userid);
+        if (!Number.isInteger(userid)) return res.status(400).json({ "message": 'User ID required or Invalid user id entered' });
+        
+        const user = await User.findOne({ userid }).exec();
         if (!user) {
             return res.status(204).json({ 'message': "No user found" });
         }
-        const result = await user.deleteOne({ userid: req.body.id });
+        
+        await User.deleteOne({ userid });
+        await Profile.deleteOne({userid});
+        await Wishlist.deleteOne({userid});
+
         res.status(203).json({ message: "User deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });
