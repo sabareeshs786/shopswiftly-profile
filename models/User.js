@@ -26,6 +26,15 @@ const userSchema = new Schema({
   },
   refreshToken: {
     type: String,
+  },
+  verified:{
+    type: Boolean,
+    default: false,
+    required: true
+  },
+  superadmin: {
+    type: Boolean,
+    required: false
   }
 });
 

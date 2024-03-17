@@ -89,5 +89,13 @@ const strValToNumArr = (str) => {
     return numArr.map((n) => Number.parseInt(n, 10));
 }
 
+const generateVerificationCode = () => {
+    const min = 100000; // Minimum 6-digit number
+    const max = 999999; // Maximum 6-digit number
+    return String(Math.floor(Math.random() * (max - min + 1)) + min);
+}
 
-module.exports = { isvalidInputData, removeEmptyFields, strValToNumVal, strValToNumArr, isValidPhoneNumber, isValidName, getNumVal, getIntVal, isValidAddress };
+module.exports = { isvalidInputData, removeEmptyFields, 
+    strValToNumVal, strValToNumArr, isValidPhoneNumber, 
+    isValidName, getNumVal, getIntVal, isValidAddress,
+    generateVerificationCode };
