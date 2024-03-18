@@ -70,13 +70,29 @@ const handleEmailVerification = async (req, res) => {
 const handleForgotPasswordCode = async (req, res) => {
     try {
         const email = req.body?.email;
-        if(!email) return res.status(400).json({message: "Invalid input data"});
+        const code = req.body?.code;
+        if(!email || !code) return res.status(400).json({message: "Invalid email id or verification code"});
 
         const user = await User.findOne({email}).exec();
         if(!user) return res.status(400).json({message: "Invalid email address entered"});
-        
+        const result = await FPasswordVerificationCodes.findOne({email}).exec();
+        if(!result) return res.status(400).json({message: "Verification code expired"});
+
+        if(result?.code === code){
+            await FPasswordVerificationCodes.updateOne({email}, {
+                $set: {
+                    verified: true
+                }
+            }).exec();
+            return res.status(200).json({message: "Verification successful"});
+        }
+        else{
+            return res.status(400).json({message: "Invalid verification code"});
+        }
+
     } catch (error) {
-        
+        console.log(error);
+        return res.status(500).json({message: "Internal server error"});
     }    
 }
 
@@ -91,13 +107,17 @@ const handleResendVC = async (req, res) => {
         if(!user) return res.status(400).json({message: "Invalid email address entered"});
 
         let verCodeCollection;
-
+        let subject, text;
         if(purpose === "email"){
             if(user.verified) return res.status(200).json({message: "Email id already verified"});
             verCodeCollection = EmailVerificationCodes;
+            subject = "Verification code";
+            text = "Your email verification code is";
         }
         else{
             verCodeCollection = FPasswordVerificationCodes;
+            subject = "Verification code to reset password";
+            text = "The code to reset the password is";
         }
 
         const result = await verCodeCollection.findOneAndDelete({ email });
@@ -109,7 +129,7 @@ const handleResendVC = async (req, res) => {
 
         // Generate new verification code
         const code = generateVerificationCode();
-        const isSent = await sendEmail(email, "Verification code", `Your email verification code is ${code}`);
+        const isSent = await sendEmail(email, subject, `${text} ${code}`);
 
         if(!isSent)
             throw {message: "Can't send email"};

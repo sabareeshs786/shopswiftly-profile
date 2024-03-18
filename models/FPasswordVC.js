@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const forgotPasswordVerificationCodesSchema = new Schema({
     email: { type: String, required: true, unique: true },
     code: { type: String, required: true },
+    verified: {type: Boolean, default: false},
     createdAt: { type: Date, default: Date.now, expires: 600000 } // Expires in 10 minutes
 });
 

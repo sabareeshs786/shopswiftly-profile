@@ -23,7 +23,7 @@ const handleNewUser = async (req, res) => {
 
         const passwordValidity = isPasswordValid(pwd);
         if (!passwordValidity) return res400(res, "Invalid password entered");
-        if (pwd != cpwd) return res400(res, "Passwords doesn't match");
+        if (pwd !== cpwd) return res400(res, "Passwords doesn't match");
 
         // Storing in the database
         const counter = await Counter.findOneAndUpdate(

@@ -19,6 +19,7 @@ const loginController = require('./controller/AuthControllers/loginController');
 const logoutController = require('./controller/AuthControllers/logoutController');
 const refreshController = require('./controller/AuthControllers/refreshTokenController');
 const forgotPasswordController = require('./controller/AuthControllers/forgotPasswordController');
+const resetPasswordController = require('./controller/AuthControllers/resetPasswordController');
 const verificationController = require('./controller/AuthControllers/verifyController');
 const { addAdmin } = require('./config/addAdmin');
 
@@ -38,9 +39,10 @@ app.post('/signup', signupController.handleNewUser);
 app.post('/login', loginController.handleLogin);
 app.get('/refresh', refreshController.handleRefreshToken);
 app.get('/logout', logoutController.handleLogout);
-app.post('/forgot-password', forgotPasswordController.handleForgotPassword);
 app.post('/verify-email', verificationController.handleEmailVerification);
-app.post('/verify-forgot-password', verificationController.handleForgotPasswordCode);
+app.post('/forgot-password', forgotPasswordController.handleForgotPassword);
+app.post('/verify-forgot-password-code', verificationController.handleForgotPasswordCode);
+app.post('/reset-password', resetPasswordController.handleResetPassword);
 app.post('/resend', verificationController.handleResendVC);
 
 // Routes that require authentication and authorization

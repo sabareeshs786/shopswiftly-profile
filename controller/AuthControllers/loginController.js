@@ -13,7 +13,8 @@ const handleLogin = async (req, res) => {
 
         const match = await bcrypt.compare(pwd, foundUser.password);
         if (!match) return res.sendStatus(401);
-
+        if(!match.verified) return res.status(401).json({message: "Email id is not verified"});
+        
         const roles = Object.values(foundUser.roles).filter(Boolean);
 
         const accessToken = getAccessToken(foundUser.userid, roles);

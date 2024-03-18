@@ -1,30 +1,28 @@
 const User = require('../../models/User');
-const bcrypt = require('bcrypt');
-const { getAccessToken, getRefreshToken } = require('../../utils/getTokens');
+const FPasswordVerificationCodes = require('../../models/FPasswordVC');
 const { res500 } = require('../../utils/errorResponse');
 
 const handleForgotPassword = async (req, res) => {
     try {
-        const { email, pwd } = req.body;
-        if (!email || !pwd) return res.sendStatus(400);
+        const { email } = req.body;
+        if (!email) return res.status(400).json({message: "Invalid email id"});
 
         const foundUser = await User.findOne({ email: email }).exec();
-        if (!foundUser) return res.sendStatus(401);
+        if (!foundUser) return res.status(401).json({message: "User not found"});
 
-        const match = await bcrypt.compare(pwd, foundUser.password);
-        if (!match) return res.sendStatus(401);
+        // Send verification code
+        const code = generateVerificationCode();
+        const isSent = await sendEmail(email, "Verification code to reset password", `The code to reset the password is ${code}`);
 
-        const roles = Object.values(foundUser.roles).filter(Boolean);
+        if(!isSent)
+            throw {message: "Can't send email"};
 
-        const accessToken = getAccessToken(foundUser.userid, roles);
-
-        const refreshToken = getRefreshToken(foundUser.userid);
-        foundUser.refreshToken = refreshToken;
-        const result = await foundUser.save();
-        if (!result) return res500(res);
-
-        res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, maxAge: 24 * 60 * 60 * 1000 });
-        res.json({ roles, accessToken });
+        await FPasswordVerificationCodes.findOneAndDelete({ email });
+        await FPasswordVerificationCodes.create([{
+            "email": email,
+            "code": code
+        }]);
+        return res.status(200).json({message: "Verification code is sent to your email address"});
     }
     catch (err) {
         return res500(res);
