@@ -21,6 +21,7 @@ const refreshController = require('./controller/AuthControllers/refreshTokenCont
 const forgotPasswordController = require('./controller/AuthControllers/forgotPasswordController');
 const resetPasswordController = require('./controller/AuthControllers/resetPasswordController');
 const verificationController = require('./controller/AuthControllers/verifyController');
+const sendSmsController = require('./controller/AuthControllers/sendSmsController');
 const { addAdmin } = require('./config/addAdmin');
 
 const PORT = process.env.PORT || 3500;
@@ -44,6 +45,7 @@ app.post('/forgot-password', forgotPasswordController.handleForgotPassword);
 app.post('/verify-forgot-password-code', verificationController.handleForgotPasswordCode);
 app.post('/reset-password', resetPasswordController.handleResetPassword);
 app.post('/resend', verificationController.handleResendVC);
+app.post('/sendsms', sendSmsController.handleSendSms);
 
 // Routes that require authentication and authorization
 // Verifying JWT(JSON Web Token)
