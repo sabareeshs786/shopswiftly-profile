@@ -5,6 +5,8 @@ const EmailVerificationCodes = require('../../models/EmailVC');
 const FPasswordVerificationCodes = require('../../models/FPasswordVC');
 
 const mongoose = require('mongoose');
+const { generateVerificationCode } = require('../../utils/utilFunctions');
+const { sendEmail } = require('../../utils/emailSender');
 
 const handleEmailVerification = async (req, res) => {
     const session = await mongoose.startSession();
@@ -137,7 +139,7 @@ const handleResendVC = async (req, res) => {
         await verCodeCollection.create([{
             "email": email,
             "code": code
-        }]).exec();
+        }]);
 
         return res.status(200).json({message: "Verification code sent successfully"});
 

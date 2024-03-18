@@ -1,6 +1,8 @@
 const User = require('../../models/User');
 const FPasswordVerificationCodes = require('../../models/FPasswordVC');
 const { res500 } = require('../../utils/errorResponse');
+const { generateVerificationCode } = require('../../utils/utilFunctions');
+const { sendEmail } = require('../../utils/emailSender');
 
 const handleForgotPassword = async (req, res) => {
     try {
@@ -15,7 +17,7 @@ const handleForgotPassword = async (req, res) => {
         const isSent = await sendEmail(email, "Verification code to reset password", `The code to reset the password is ${code}`);
 
         if(!isSent)
-            throw {message: "Can't send email"};
+            throw {code: 401, message: "Can't send email"};
 
         await FPasswordVerificationCodes.findOneAndDelete({ email });
         await FPasswordVerificationCodes.create([{
@@ -25,6 +27,7 @@ const handleForgotPassword = async (req, res) => {
         return res.status(200).json({message: "Verification code is sent to your email address"});
     }
     catch (err) {
+        console.log(err);
         return res500(res);
     }
 }

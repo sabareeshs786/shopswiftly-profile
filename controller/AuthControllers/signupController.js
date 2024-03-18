@@ -39,11 +39,12 @@ const handleNewUser = async (req, res) => {
             "password": hashedPwd
         }], { session });
 
+        // Generate and send verification code
         const code = generateVerificationCode();
         const isSent = await sendEmail(email, "Verification code", `Your email verification code is ${code}`);
 
         if(!isSent)
-            throw {message: "Can't send email"};
+            throw {code: 401, message: "Can't send email"};
 
         const emailVerification = await EmailVerificationCodes.create([{
             "email": email,
@@ -51,11 +52,14 @@ const handleNewUser = async (req, res) => {
         }], { session });
 
         await session.commitTransaction();
-        res.status(201).json({ message: `Verification code is sent to ${email}}` });
+        res.status(201).json({ message: `Verification code is sent to ${email}` });
     } catch (err) {
         await session.abortTransaction();
         console.log(err);
-        res.status(500).json({ 'message': "Internal server error occurred!!!\n Try again later" });
+        if(err.code && err.message)
+            return res.status(err.code).json({message: err.message});
+        else
+            res.status(500).json({ 'message': "Internal server error occurred!!!\n Try again later" });
     }
     finally {
         if (session) {

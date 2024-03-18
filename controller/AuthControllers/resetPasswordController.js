@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+
 const User = require('../../models/User');
 const FPasswordVerificationCodes = require('../../models/FPasswordVC');
 const { isPasswordValid } = require('../../utils/checkInputValidity');
@@ -12,13 +14,14 @@ const handleResetPassword = async (req, res) => {
         const foundUser = await User.findOne({ email: email }).exec();
         if (!foundUser) return res.status(401).json({message: "User not found"});
         const vc = await FPasswordVerificationCodes.findOne({email}).exec();
-        if(!vc.verified) return res.status(401).json({message: "Not verified"});
+        if(!vc?.verified) return res.status(401).json({message: "Not verified"});
 
         const passwordValidity = isPasswordValid(pwd);
         if (!passwordValidity) return res400(res, "Invalid password entered");
         if (pwd !== cpwd) return res400(res, "Passwords doesn't match");
 
         const hashedPwd = await bcrypt.hash(pwd, 10);
+        // if(foundUser.password === hashedPwd) return res400(res, "Old password entered");
         await User.updateOne({userid: foundUser.userid}, 
         {
             $set: {
